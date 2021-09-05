@@ -15,13 +15,12 @@ export const createFilters = (
     params.push(
       Distinct(
         Union(
-          param
+          ...filters[param]
             .trim()
             .split(',')
             .map(value => 
               Match(Index(`${collection.toLowerCase()}_by_${param}`), value)
             )
-            .join(',')
         )
       )
     )

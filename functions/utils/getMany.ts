@@ -1,12 +1,14 @@
 import { HandlerResponse } from "@netlify/functions"
-import { Call, Client, Expr, Intersection } from "faunadb"
-import { getPageSize, getProperCollectionName } from "."
+import { Call, Client, Expr, Index, Intersection, Match } from "faunadb"
+import { getFormattedData, getPageSize, getProperCollectionName } from "."
+import { Responder, responder } from "./responder";
 import safeAwait from './safeAwait';
 const { FAUNADB: secret } = process.env
 
 type UtilityInput = {
   params: Expr[],
   collection: string,
+  request: string,
   size?: number,
   after?: string | number,
   before?: string | number,
@@ -19,22 +21,24 @@ export const getMany = async ({
   after,
   before,
   verbose,
-  collection
-}: UtilityInput): Promise<HandlerResponse> => {
+  collection,
+  request
+}: UtilityInput): Promise<Responder> => {
   /** Establish Fauna Client - If it cannot be established throw 500 error */
   const client = new Client({ secret })
-  if (!client) return {
-    statusCode: 500,
-    body: 'Server Error: No FaunaDB Authentication Provided.'
-  }
+  if (!client) return responder(
+      500,
+      'Server Error: No FaunaDB Authentication Provided.'
+    )
 
   const [error, data] = await safeAwait(
     client.query(
       Call(
         "GetResults",
+        params.length ?
         Intersection(
           ...params
-        ),
+        ) : Match(Index(collection)),
         {
           size: getPageSize(size, verbose),
           ...(verbose) && { verbose },
@@ -46,13 +50,13 @@ export const getMany = async ({
     )
   )
 
-  if (error) return {
-    statusCode: 500,
-    body: 'Server Error: ' + error
-  }
+  if (error) return responder(
+    500,
+    'Server Error: ' + error
+  )
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify(data)
-  }
+  return responder(
+    200, 
+    getFormattedData(data, request)
+  )
 }

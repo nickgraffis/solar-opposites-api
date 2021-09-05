@@ -12,7 +12,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.21.3",
     "faunadb": "^4.4.1",
+    "node-fetch": "^2.6.1",
+    "ua-parser-js": "^0.7.28",
     "vitepress": "^0.17.0"
   },
   "devDependencies": {

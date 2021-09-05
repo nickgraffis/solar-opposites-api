@@ -17,17 +17,30 @@ The base url contains information about all available API's resources. All reque
 
 ```js
 {
-  "characters": "https://solaroppositesapi.com/api/character",
-  "locations": "https://solaroppositesapi.com/api/location",
-  "episodes": "https://solaroppositesapi.com/api/episode",
-  "devices": "https://solaroppositesapi.com/api/devices",
-  "documents": "https://solaroppositesapi.com/api/all"
+  "stats": {
+    "response_time": 0.0034689903259277344
+  },
+  "results": {
+    "message": "Welcome to the Solar Opposites API!",
+    "documentation": "https://solaroppositesapi.com/documentation",
+    "characters": "https://solaroppositesapi.com/api/character",
+    "locations": "https://solaroppositesapi.com/api/location",
+    "episodes": "https://solaroppositesapi.com/api/episode",
+  }
 }
 ```
-### Info and Pagination
-Each request, other than those requesting a single document, returns an array of `results` and an `info` object.
+### Info, Results, and Pagination
+Each request returns `results`, `stats`, and `info`. 
 
-Info Object Properties:
+**Results** is either an array of objects that met the criteria of the request, or if you are requesting a single document, it will be a single object.
+
+**Stats** is an object that contains information about the request.
+* `response_time`: The time, in miliseconds, it took to process the request. _This is calculated from the time the request is recieved, to the time the request is sent._
+  * [View the source]().
+* `request_time`: The time, in epoch time, that the request was recieved.
+* `request_log`: A url to view the request log - with more detailed information.
+
+**Info** is an object that contains information about the response. _It is ommited when requesting single documents_.
 * `count`: The number of results returned
 * `pages`: The number of pages of results
 * `after`: The url for the next page of results
@@ -36,7 +49,7 @@ Info Object Properties:
 The default page size is 64. You can adjust this in the query string with the `size` parameter.
 
 ```js
-GET `https://solaroppositesapi.com/api/charecters?size=500`
+GET `https://solaroppositesapi.com/api/charecters?size=100`
 ```
 
 :::warning
@@ -58,39 +71,36 @@ If you would like the entire document returned, you can set the `verbose` parame
 
 
 :::warning
-When using the verbose option, the max page size is 24, and the default is 8.
+When using the verbose option, the max page size is 24, and the default is 12.
 :::
-
-## Clients
-
-### Javascript Client
-There is a **_fully typed_** javascript client available. [View documentation]().
-
-::: tip
-If you want to submit a client, please [submit a PR](). :wink:
-:::
-
+<script setup>
+  import { ref } from 'vue'
+  const count = ref(0)
+  fetch('https://rickandmortyapi.com/api/character')
+  .then(res => res.json())
+  .then(res => count.value = res.info.count)
+</script>
 ## Charecters
-There are a total of `671` total charecters in the database.
+There are a total of <code>{{ count }}</code> total charecters in the database.
 
 ### Charecter Schema
 | key        | type           | description  |
 | ------------- |:-------------:| -----:|
 | `species`      | string | The species of the charecter. |
 | `name`      | string | The name of the charecter. |
-| `location`      | object or "unknown" | The [location]() of the charecter, currently. |
 | `url`      | string | The url of this specific charecter. |
 | `image`      | string | The charecter's image url. |
 | `alias`      | string or string[] | An alias of the charecter. |
 | `id`      | string | The `Reference` id of the charecter. |
-| `episodes`      | object | An array of [episodes]() that the charecter appeared in. Presents only the urls, unless the `verbose` parameter is set to true. |
 | `type`      | string | A category of the charecter in addition to sepcies. |
 | `gender`      | string | The gender identification of the charecter. |
-| `origin`      | object or "unknown" | The origin [location]() of the charecter. |
+| `episodes`      | object | An array of [episodes](/documentation#episode-schmea) that the charecter appeared in. Presents only the urls, unless the `verbose` parameter is set to true. |
+| `location`      | object or "unknown" | The [location](/documentation#location-schmea) of the charecter, currently. |
+| `origin`      | object or "unknown" | The origin [location](/documentation#location-schmea) of the charecter. |
 | `status`      | "alive" or "dead" or "unknown" | The charecter's life/death status. |
 
 ### Get All Charecters
-You can get a list of all charecters by making a request to `/api/charecters`. Read more about [info]() and [pagination]() to better understand this request.
+You can get a list of all charecters by making a request to `/api/charecters`. Read more about [info](/documentation#info-results-and-pagination) and [pagination](/documentation#info-results-and-pagination) to better understand this request.
 
 ```js
 GET `https://solaroppositesapi.com/api/charecters`
@@ -98,51 +108,44 @@ GET `https://solaroppositesapi.com/api/charecters`
 
 ```js
 {
-  info: {
-    count: 671,
-    after: "305497777165566530",
-    before: "305497645548307010",
-    pages: 11
+  "stats": {
+    "response_time": 338.01973700523376,
+    "request_time": 1630882779,
+    "request_log": "https://solaroppositesapi.com/api/logs/305497645548307010"
   },
-  results: [
+  "info": {
+    "count": 16,
+    "after": null,
+    "before": "https://solaroppositesapi.com/api/characters%3F%26before%3D305497645548307010",
+    "pages": 1
+  },
+  "results": [
     {
-      species: "Shlorpian",
-      name: "Terry",
-      url: "https://solaroppositesapi.com/api/characters/305497645548307010",
-      image: "https://solaroppositesapi.com/api/images/terry",
-      alias: "Number 31827",
-      id: "305497645548307010",
-      type: "Alien",
-      gender: "male",
-      episodes: [
+      "species": "Shlorpian",
+      "name": "Korvotron",
+      "url": "https://solaroppositesapi.com/api/characters/308773781365588548",
+      "image": "https://solaroppositesapi.com/api/images/characters/korvotron",
+      "alias": "Korvo",
+      "id": "308773781365588548",
+      "type": "Alien",
+      "gender": "male",
+      "episodes": [
         "https://solaroppositesapi.com/api/episodes/308828691528417861",
-        "https://solaroppositesapi.com/api/episodes/308828844405555780",
-        "https://solaroppositesapi.com/api/episodes/308828904655684165",
-        "https://solaroppositesapi.com/api/episodes/308828964383621700",
-        "https://solaroppositesapi.com/api/episodes/308829025531331140",
-        "https://solaroppositesapi.com/api/episodes/308829071667626564",
-        "https://solaroppositesapi.com/api/episodes/308829119780487749",
-        "https://solaroppositesapi.com/api/episodes/308829190630670915",
-        "https://solaroppositesapi.com/api/episodes/308829280239878724",
-        "https://solaroppositesapi.com/api/episodes/308829295694840387",
-        "https://solaroppositesapi.com/api/episodes/308829307238613571",
-        "https://solaroppositesapi.com/api/episodes/308829320101495363",
-        "https://solaroppositesapi.com/api/episodes/308829335274390084",
-        "https://solaroppositesapi.com/api/episodes/308829347649684037",
-        "https://solaroppositesapi.com/api/episodes/308829371662074436",
-        "https://solaroppositesapi.com/api/episodes/308829388298781251"
+        ...
       ],
-      location: {
-        name: "Earth",
-        type: "Planet",
-        url: "https://solaroppositesapi.com/api/locations/308829637390107205"
+      "location": {
+        "name": "Earth",
+        "type": "Planet",
+        "url": "https://solaroppositesapi.com/api/locations/308829637390107205",
+        "image": "https://solaroppositesapi.com/api/images/locations/earth"
       },
-      origin: {
-        name: "Shlorp",
-        type: "Planet",
-        url: "https://solaroppositesapi.com/api/locations/305510516355236419"
+      "origin": {
+        "name": "Shlorp",
+        "type": "Planet",
+        "url": "https://solaroppositesapi.com/api/locations/305510516355236419",
+        "image": "https://solaroppositesapi.com/api/images/locations/shlorp"
       },
-      status: "Alive"
+      "status": "Alive"
     },
     ...
   ]
@@ -158,29 +161,38 @@ GET `https://solaroppositesapi.com/api/charecters/${id}`
 
 ```js
 {
-  species: "Shlorpian",
-  name: "Korvotron",
-  url: "https://solaroppositesapi.com/api/characters/308773781365588548",
-  image: "https://solaroppositesapi.com/api/images/korvotron",
-  alias: "Korvo",
-  id: "308773781365588548",
-  type: "Alien",
-  gender: "male",
-  episodes: [
-    "https://solaroppositesapi.com/api/episodes/308828691528417861",
-    ...
-  ],
-  location: {
-    name: "Earth",
-    type: "Planet",
-    url: "https://solaroppositesapi.com/api/locations/308829637390107205"
+  "stats": {
+    "response_time": 192.01973700523376,
+    "request_time": 1630882779,
+    "request_log": "https://solaroppositesapi.com/api/logs/305497645548307010"
   },
-  origin: {
-    name: "Shlorp",
-    type: "Planet",
-    url: "https://solaroppositesapi.com/api/locations/305510516355236419"
-  },
-  status: "Alive"
+  results: {
+    "species": "Shlorpian",
+    "name": "Korvotron",
+    "url": "https://solaroppositesapi.com/api/characters/308773781365588548",
+    "image": "https://solaroppositesapi.com/api/images/characters/korvotron",
+    "alias": "Korvo",
+    "id": "308773781365588548",
+    "type": "Alien",
+    "gender": "male",
+    "episodes": [
+      "https://solaroppositesapi.com/api/episodes/308828691528417861",
+      ...
+    ],
+    "location": {
+      "name": "Earth",
+      "type": "Planet",
+      "url": "https://solaroppositesapi.com/api/locations/308829637390107205",
+      "image": "https://solaroppositesapi.com/api/images/locations/earth"
+    },
+    "origin": {
+      "name": "Shlorp",
+      "type": "Planet",
+      "url": "https://solaroppositesapi.com/api/locations/305510516355236419",
+      "image": "https://solaroppositesapi.com/api/images/locations/shlorp"
+    },
+    "status": "Alive"
+  }
 }
 ```
 
@@ -192,14 +204,11 @@ When you filter by multiple parameters, you are saying that you want the query t
 When you provide an array for `<value>` you are saying that you want the query to match **ANY** of the values in the array for the given field. You can do this with a `<value>, <value>` or `[<value>, <value>]`.
 
 Avaliable parameters:
-* `name`: filter by the name of the character. The alias is acceptable as well. _See example below_
-* `species`: filter by the species of the character
-* `origin`: filter by the origin location name of the character
-* `location`: filter by the current location name of the character
-* `status`: filter by the status of the character, "alive", "dead", or "unknown"
-* `id`: filter by the id of the character
-* `gender`: filter by the identified gender of the character
-* `episode`: fitler by the episode name
+* `name`: filter by the name of the character.
+* `species`: filter by the species of the character.
+* `status`: filter by the status of the character, "alive", "dead", or "unknown".
+* `id`: filter by the id of the character. _Useful for retrieving a two or more specific characters._
+* `gender`: filter by the identified gender of the character.
 
 
 ```js
@@ -207,7 +216,7 @@ GET `https://solaroppositesapi.com/api/charecters?name=Korvo`
 ```
 
 ```js
-GET `https://solaroppositesapi.com/api/charecters?origin=Shlorp&status=alive,dead`
+GET `https://solaroppositesapi.com/api/charecters?species=Shlorpian&status=alive,dead`
 ```
 
 ## Locations
