@@ -1,0 +1,30 @@
+Query(
+  Lambda(
+    ["results", "options", "collection"],
+    Let(
+      {
+        verbose: If(
+          ContainsPath(
+            ["options", "verbose"], 
+            Var("options")
+          ), 
+          Select(["options", "verbose"], Var("options")), 
+          false
+        ),
+        size: Select(["size"], Var("options")),
+        page: Call("GetPage", [Var("results"), Var("options"), Concat([LowerCase(Var("collection")), "s"], "")]),
+        getter: Concat(["Get", Var("collection")], "")
+      },
+      {
+        info: Call("GetMeta", [Var("size"), Var("results"), Var("page")]),
+        results: Select(
+          ["data"],
+          Map(
+            Var("page"),
+            Lambda("ref", Call(Var("getter"), [Var("ref"), Var("verbose")]))
+          )
+        )
+      }
+    )
+  )
+)

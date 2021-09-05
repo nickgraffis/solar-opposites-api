@@ -1,0 +1,31 @@
+Query(
+  Lambda(
+    ["ref", "verbose"],
+    If(
+      Exists(Var("ref")),
+      {
+        name: Select(["data", "name"], Get(Var("ref"))),
+        type: Select(["data", "type"], Get(Var("ref"))),
+        url: Call("GetURL", [Var("ref"), "locations"]),
+        image: Call("GetImageURL", [Var("ref"), "locations"]),
+        characters: Map(
+          Paginate(
+            Intersection(
+              Match(Index("characters_by_location"), Var("ref")),
+              Match(Index("characters_by_origin"), Var("ref")),
+            )
+          ),
+          Lambda(
+            "charecterRef",
+            If(
+              Equals(Var("verbose"), true),
+              Call("GetCharacter", [Var("charecterRef"), false, "location"]),
+              Select(["url"], Call("GetCharacter", [Var("charecterRef"), false, "location"]))
+            )
+          )
+        ),
+      },
+      "unknown"
+    )
+  )
+)

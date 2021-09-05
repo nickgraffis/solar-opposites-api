@@ -1,0 +1,31 @@
+Query(
+  Lambda(
+    ["ref", "verbose"],
+    If(
+      Exists(Var("ref")),
+      {
+        name: Select(["data", "name"], Get(Var("ref"))),
+        date: ToString(Select(["data", "date"], Get(Var("ref")))),
+        season: Select(["data", "season"], Get(Var("ref"))),
+        description: Select(["data", "description"], Get(Var("ref"))),
+        url: Call("GetURL", [Var("ref"), "episodes"]),
+        image: Call("GetImageURL", [Var("ref"), "episodes"]),
+        characters: Map(
+          Paginate(Match(Index("characters_by_episode"), Var("ref"))),
+          Lambda(
+            "charecterRef",
+            If(
+              Equals(Var("verbose"), true),
+              Call("GetCharacter", [Var("charecterRef"), false, "episodes"]),
+              Select(
+                ["url"],
+                Call("GetCharacter", [Var("charecterRef"), false, "episodes"])
+              )
+            )
+          )
+        )
+      },
+      "unknown"
+    )
+  )
+)

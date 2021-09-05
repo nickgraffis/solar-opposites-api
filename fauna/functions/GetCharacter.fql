@@ -1,0 +1,125 @@
+Query(
+  Lambda(
+    ["ref", "verbose", "omit"],
+    Merge(
+      Merge(
+        {
+          id: Select(["ref", "id"], Get(Var("ref"))),
+          url: Call("GetURL", [Var("ref"), "characters"]),
+          image: Call("GetImageURL", [Var("ref"), "characters"]),
+        },
+        If(
+          Equals(Var("omit"), "location"),
+          {},
+          {
+            location: If(
+              And(
+                ContainsPath(["data", "location", "ref"], Get(Var("ref"))),
+                IsRef(Select(["data", "location", "ref"], Get(Var("ref"))))
+              ),
+              Call(
+                "GetLocation",
+                Select(["data", "location", "ref"], Get(Var("ref"))),
+                false
+              ),
+              "unknown"
+            ),
+            origin: If(
+              And(
+                ContainsPath(["data", "origin", "ref"], Get(Var("ref"))),
+                IsRef(Select(["data", "origin", "ref"], Get(Var("ref"))))
+              ),
+              Call(
+                "GetLocation",
+                Select(["data", "origin", "ref"], Get(Var("ref"))),
+                false
+              ),
+              "unknown"
+            )
+          }
+        )
+      ),
+      If(
+        Equals(Var("omit"), "episodes"),
+        {},
+        {
+          episodes: If(
+            ContainsPath(["data", "episodes"], Get(Var("ref"))),
+            Map(
+              Select(["data", "episodes"], Get(Var("ref"))),
+              Lambda(
+                "episodeRef",
+                If(
+                  Equals(Var("verbose"), true),
+                  Call("GetEpisode", Var("episodeRef"), false),
+                  Select(["url"], Call("GetEpisode", [Var("episodeRef"), false]))
+                )
+              )
+            ),
+            []
+          )
+        }
+      ),
+    )
+  )
+)
+
+
+///SAVE
+Query(
+  Lambda(
+    "charRef",
+    Merge(Select(["data"], Get(Var("charRef"))), {
+      id: Select(["ref", "id"], Get(Var("charRef"))),
+      url: Concat(
+        [
+          "https://solaroppositesapi.com/api/characters/",
+          Select(["ref", "id"], Get(Var("charRef")))
+        ],
+        ""
+      ),
+      episodes: If(
+        ContainsPath(["data", "episodes"], Get(Var("charRef"))),
+        Map(
+          Select(["data", "episodes"], Get(Var("charRef"))),
+          Lambda(
+            "episodeRef",
+            Select(["url"], Call("GetEpisode", Var("episodeRef")))
+          )
+        ),
+        []
+      ),
+      image: Concat(
+        [
+          "https://solaroppositesapi.com/api/images/",
+          Casefold(
+            ReplaceStr(Select(["data", "name"], Get(Var("charRef"))), " ", "_")
+          )
+        ],
+        ""
+      ),
+      location: If(
+        And(
+          ContainsPath(["data", "location", "ref"], Get(Var("charRef"))),
+          IsRef(Select(["data", "location", "ref"], Get(Var("charRef"))))
+        ),
+        Call(
+          "GetLocation",
+          Select(["data", "location", "ref"], Get(Var("charRef")))
+        ),
+        "unknown"
+      ),
+      origin: If(
+        And(
+          ContainsPath(["data", "origin", "ref"], Get(Var("charRef"))),
+          IsRef(Select(["data", "origin", "ref"], Get(Var("charRef"))))
+        ),
+        Call(
+          "GetLocation",
+          Select(["data", "origin", "ref"], Get(Var("charRef")))
+        ),
+        "unknown"
+      )
+    })
+  )
+)

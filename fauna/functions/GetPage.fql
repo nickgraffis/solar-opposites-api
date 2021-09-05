@@ -1,0 +1,16 @@
+Query(
+  Lambda(
+    ["results", "options", "collection"],
+    Paginate(Var("results"), {
+      after: If(
+        ContainsPath(["after"], Var("options")),
+        Ref(Collection(Var("collection")), Select(["after"], Var("options"))),
+        Ref(
+          Collection(Var("collection")),
+          Select(["data", 0, "id"], Paginate(Var("results")))
+        )
+      ),
+      size: Select(["size"], Var("options"))
+    })
+  )
+)

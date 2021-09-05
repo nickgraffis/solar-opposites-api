@@ -1,0 +1,14 @@
+Query(
+  Lambda(
+    ["ref", "collection"], 
+    Concat(
+      [
+        "https://solaroppositesapi.com/api/",
+        Var("collection"),
+        "/",
+        Select(["ref", "id"], Get(Var("ref")))
+      ],
+      ""
+    )
+  )
+)

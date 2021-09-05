@@ -1,0 +1,16 @@
+Query(
+  Lambda(["size", "results", "page"], {
+    count: Count(Var("results")),
+    after: If(
+      ContainsPath(["after", 0, "id"], Var("page")),
+      Select(["after", 0, "id"], Var("page")),
+      null
+    ),
+    before: If(
+      ContainsPath(["before", 0, "id"], Var("page")),
+      Select(["before", 0, "id"], Var("page")),
+      null
+    ),
+    pages: Ceil(Divide(ToDouble(Count(Var("results"))), Var("size")))
+  })
+)

@@ -1,0 +1,16 @@
+Query(
+  Lambda(
+    ["ref", "collection"], 
+    Concat(
+      [
+        "https://solaroppositesapi.com/api/images/",
+        Var("collection"),
+        "/",
+        Casefold(
+          ReplaceStr(Select(["data", "name"], Get(Var("charRef"))), " ", "_")
+        )
+      ],
+      ""
+    )
+  )
+)
