@@ -25,7 +25,7 @@ export const logResponse = async ({
   return post(
     'https://solaroppositesapi.netlify.app/metrics/log', 
     {
-      body: JSON.stringify({
+      body: {
         key: SOLAROPPOSITESKEY,
         request_time,
         response_time,
@@ -35,7 +35,7 @@ export const logResponse = async ({
         url,
         result,
         userAgent
-      })
+      }
     }
   )
   .then(res => console.log(res))
