@@ -37,6 +37,8 @@ const handler: Handler = async (event, context) => {
     result 
   } = JSON.parse(event.body)
 
+  console.log(key, SOLAROPPOSITESKEY)
+
   if (key !== SOLAROPPOSITESKEY) return {
     statusCode: 401,
     body: 'Invalid key'
