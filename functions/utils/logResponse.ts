@@ -25,17 +25,15 @@ export const logResponse = async ({
   return post(
     'https://solaroppositesapi.netlify.app/metrics/log', 
     {
-      body: {
-        key: SOLAROPPOSITESKEY,
-        request_time,
-        response_time,
-        response_size: new TextEncoder().encode(JSON.stringify(response)).length / 1024,
-        query,
-        method,
-        url,
-        result,
-        userAgent
-      }
+      key: SOLAROPPOSITESKEY,
+      request_time,
+      response_time,
+      response_size: new TextEncoder().encode(JSON.stringify(response)).length / 1024,
+      query,
+      method,
+      url,
+      result,
+      userAgent
     }
   )
   .then(res => console.log(res))
