@@ -36,7 +36,7 @@ const handler: Handler = async (event, context) => {
     url,
     result 
   } = JSON.parse(event.body)
-
+  console.log(event.body)
   console.log(key, SOLAROPPOSITESKEY)
 
   if (key !== SOLAROPPOSITESKEY) return {
