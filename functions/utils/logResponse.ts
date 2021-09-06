@@ -1,8 +1,6 @@
-import { Client, Create, Collection } from 'faunadb';
-import UAParser from 'ua-parser-js'
-import safeAwait from './safeAwait';
-const { FAUNADB: secret } = process.env
-
+import axios from 'axios';
+const { SOLAROPPOSITESKEY } = process.env
+const { post } = axios
 type UtilityInput = {
   request_time: number,
   response_time: number,
@@ -23,31 +21,21 @@ export const logResponse = async ({
   url,
   result,
   userAgent 
-}: UtilityInput): Promise<void> => {
-  const client = new Client({ secret })
-  if (!client) return
-
-  const ua = new UAParser(userAgent as string)
-
-  const [error, data] = await safeAwait(
-    client.query(
-      Create(
-        Collection('logs'),
-        {
-          data: {
-            request_time,
-            response_time,
-            response_size: new TextEncoder().encode(JSON.stringify(response)).length / 1024,
-            query,
-            browser: ua.getBrowser(),
-            os: ua.getOS(),
-            device: ua.getDevice(),
-            method,
-            url,
-            result 
-          }
-        }
-      )
-    )
-  )
+}): Promise<void> => {
+  post(
+    'https://solaroppositesapi.netlify.app/metrics/log', 
+    {
+      body: JSON.stringify({
+        key: SOLAROPPOSITESKEY,
+        request_time,
+        response_time,
+        response_size: new TextEncoder().encode(JSON.stringify(response)).length / 1024,
+        query,
+        method,
+        url,
+        result,
+        userAgent
+      })
+    }
+  ).catch(err => console.log(err))
 }
