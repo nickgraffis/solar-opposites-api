@@ -1,3 +1,4 @@
+import { performance } from 'perf_hooks'
 import { Handler } from '@netlify/functions'
 import { getOne } from '../utils/getOne';
 import { createFilters } from '../utils/createFilters';
