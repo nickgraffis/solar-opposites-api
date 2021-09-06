@@ -58,7 +58,8 @@ const handler: Handler = async (event, context) => {
     request: getOriginalRequest("characters", event.queryStringParameters)
   })
 
-  logResponse({
+  t1 = performance.now() // End timing
+  await logResponse({
     response_time: t1 - t0,
     request_time,
     response: response,
@@ -68,7 +69,6 @@ const handler: Handler = async (event, context) => {
     result: 'SUCCESS',
     userAgent: event.headers['user-agent'],
   })
-  t1 = performance.now() // End timing
   return response.addResponseTime(t1 - t0)
 }
 

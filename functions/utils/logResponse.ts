@@ -21,8 +21,8 @@ export const logResponse = async ({
   url,
   result,
   userAgent 
-}): Promise<void> => {
-  post(
+}: UtilityInput): Promise<any> => {
+  return post(
     'https://solaroppositesapi.netlify.app/metrics/log', 
     {
       body: JSON.stringify({
@@ -37,5 +37,7 @@ export const logResponse = async ({
         userAgent
       })
     }
-  ).catch(err => console.log(err))
+  )
+  .then(res => console.log(res))
+  .catch(err => console.log(err))
 }
