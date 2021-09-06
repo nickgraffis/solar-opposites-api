@@ -2,6 +2,10 @@
 title: Charecters
 editLink: true
 ---
+<script setup>
+  import Count from "../components/Count.vue";
+
+</script>
 
 ## Introduction
 This is the documentation on how to use the **Solar Opposites API** - for use in any way you can think of, but great for dummy data in tutorials, or designs, or prototypes, or whatever. :alien:
@@ -73,15 +77,8 @@ If you would like the entire document returned, you can set the `verbose` parame
 :::warning
 When using the verbose option, the max page size is 24, and the default is 12.
 :::
-<script setup>
-  import { ref } from 'vue'
-  const count = ref(0)
-  fetch('https://rickandmortyapi.com/api/character')
-  .then(res => res.json())
-  .then(res => count.value = res.info.count)
-</script>
 ## Charecters
-There are a total of <code>{{ count }}</code> total charecters in the database.
+There are a total of <ClientOnly><Count /></ClientOnly> total charecters in the database.
 
 ### Charecter Schema
 | key        | type           | description  |
